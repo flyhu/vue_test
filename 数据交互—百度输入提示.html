@@ -1,0 +1,52 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>数据交互—百度关键词搜索</title>
+<meta charset="utf-8">
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<script src="https://cdn.bootcss.com/vue-resource/1.3.1/vue-resource.js"></script>
+<style type="text/css">
+body{}
+</style>
+<script type='text/javascript'>
+window.onload = function(){
+	   var example2 = new Vue({
+		  el: '#example-2',
+		  data: {
+		  	jsonlist:[],
+		    url: 'https://sp0.baidu.com/5a1Fazu8AA54nxGko9WTAnF6hhy/su',
+		    tl:''
+		  },
+		  // 在 `methods` 对象中定义方法
+		  methods: {
+		    get: function (event) {
+		      this.$http.jsonp(this.url,
+		      	{params: {
+	          		wd:this.tl
+	          	},
+		      		jsonp:'cb'
+		      }).then(function(res){
+				 this.jsonlist=res.data.s;
+				 // alert(res.data.s);
+				},function(res){
+					alert(res.status);
+				});
+		    }
+		  }
+		})
+}
+</script>
+</head>
+<body>
+
+<div id="example-2">
+  <!-- `greet` 是在下面定义的方法名 -->
+  <input type="text" v-model="tl" @keyup="get()">
+  <ul>
+  	<li v-for="item in jsonlist">{{item}}</li>
+  </ul>
+  <div><p v-show="jsonlist.length==0">暂无数据</p></div>
+</div>
+
+</body>
+</html>
