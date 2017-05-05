@@ -40,7 +40,7 @@ window.onload = function(){
 
 <div id="example-2">
   <!-- `greet` 是在下面定义的方法名 -->
-  <input type="text" v-model="tl" @keyup.enter.enter="get()">
+  <input type="text" v-model="tl" @keyup.enter="get()">
   <ul>
   	<li v-for="item in jsonlist">{{item.filename}}</li>
   </ul>
