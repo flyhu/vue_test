@@ -1,0 +1,136 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Cnodejs社区</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<link rel="stylesheet" href="https://unpkg.com/mint-ui/lib/style.css">
+<style scoped>
+.page-header-main {
+    margin-top: 50px;
+    min-height: 120vh;
+}
+.mint-popup {
+    position: relative;
+ }
+.mint-cell-wrapper span{  
+	padding-right: 25px;  
+	overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: inherit;
+    font-weight: 400;
+    flex: 1;
+}
+.mint-popup-right {
+    width: 100%;
+    height: 100%;
+    background-color: #fff;
+}
+.v-modal {
+	display: none;
+    opacity: 0;
+}
+.content{
+	font-family: 'microsoft yahei';
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    color: #2c3e50;
+    padding:0 8px;
+}
+.content blockquote{
+      margin-left: 10px;
+      color: #777;
+      padding: 0px 15px;
+      border-left: 4px solid #ddd;
+    }
+    .content a{
+      text-decoration: underline;
+      word-break:break-all;
+      display: inline-block;
+    }
+    .content img{
+      width: 100%;
+    }
+</style>
+
+</head>
+<body>
+
+<div id="example-2">
+
+<mt-popup
+      v-model="popupVisible"
+      position="right">
+	
+	<div class="page-header-main">
+	<section class='padding content' v-html="content"></section>
+	</div>
+</mt-popup>
+<mt-header :title="title" fixed style="z-index: 9999;" v-show="popupVisible" >
+		     <mt-button icon="back" slot="left" @click="popupVisible=false"></mt-button>
+		     <mt-button icon="more" slot="right"></mt-button>
+</mt-header>
+         
+<div v-show="!popupVisible">
+<mt-header fixed title="Cnodejs社区头条">Cnodejs社区头条</mt-header>
+<div class="page-header-main">
+
+	<mt-popup
+		  :visible.sync="popupVisible"
+		  position="left">
+	</mt-popup>
+ <div>
+	  <a class="mint-cell" v-for="(item,index) in jsonlist" @click="indexfun(index)">
+	  	<div class="mint-cell-wrapper" ><span>{{item.title}}</span></div> <i class="mint-cell-allow-right"></i></div>
+	  </a>	
+  </div>
+  <div><p v-show="jsonlist.length==0">暂无数据</p></div>
+</div>
+</div></div>
+</body>
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<script src="https://unpkg.com/mint-ui/lib/index.js"></script>
+<script src="https://cdn.bootcss.com/vue-resource/1.3.1/vue-resource.js"></script>
+<script>
+
+	   var example2 = new Vue({
+		  el: '#example-2',
+		  data: {
+		  	jsonlist:[],
+		    url: 'https://cnodejs.org/api/v1/topics',
+		    popupVisible:false,
+		    nowindex: '100',
+		    title: '',
+		    content: ''
+		  },
+		  mounted: function (){
+		  	this.$nextTick(function(){
+		  		this.toplist();
+		  	})
+		  },
+		  filters: {
+		  },
+		  methods:{
+		  	toplist:function(){
+		  		this.$http.get(this.url).then(function(res){
+				 this.jsonlist=res.data.data;
+				 // alert(res.data.s);
+				},function(res){
+					alert(res.status);
+				});
+		  	},
+		  	indexfun:function(index){
+		  		this.nowindex = index;
+		  		this.title = this.jsonlist[this.nowindex].title;
+		  		this.content = this.jsonlist[this.nowindex].content;
+		  		console.log(this.content);
+		  		this.popupVisible=true;
+		  	}
+		  }
+	
+		})
+
+</script>
+
+</html>
