@@ -3,40 +3,175 @@
 <head>
 <title>Cnodejs社区</title>
 <meta charset="utf-8">
-<script src="https://unpkg.com/vue/dist/vue.js"></script>
-<script src="https://cdn.bootcss.com/vue-resource/1.3.1/vue-resource.js"></script>
-<style type="text/css">
-body{}
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<link rel="stylesheet" href="https://unpkg.com/mint-ui/lib/style.css">
+<style scoped>
+.mint-header{height:45px;}
+.mint-header h1{font-size: 18px;}
+.page-header-main {
+    margin-top: 50px;
+    min-height: 120vh;
+}
+.mint-popup {
+    position: fixed;
+    overflow-y: scroll;
+ }
+.mint-cell-wrapper span{  
+	padding-right: 25px;  
+	overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: inherit;
+    font-weight: 400;
+    flex: 1;
+}
+.mint-popup-right {
+    width: 100%;
+    height: 100%;
+    background-color: #fff;
+}
+.mint-popup-bottom {
+    top: auto;
+    right: auto;
+    bottom: 0;
+    left: 50%;
+    -webkit-transform: translate3d(-50%,0,0);
+    transform: translate3d(-50%,0,0);
+}
+.v-modal {
+	display: none;
+    opacity: 0;
+}
+.content{
+	font-family: 'microsoft yahei';
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    color: #2c3e50;
+    padding:0 8px;
+}
+.content blockquote{
+      margin-left: 10px;
+      color: #777;
+      padding: 0px 15px;
+      border-left: 4px solid #ddd;
+    }
+    .content a{
+      text-decoration: underline;
+      word-break:break-all;
+      display: inline-block;
+    }
+    .content img{
+      width: 100%;
+    }
+
+
+
 </style>
 
 </head>
 <body>
 
 <div id="example-2">
-  <ul>
-  	<li v-for="item in jsonlist">{{item.title}}</li>
-  </ul>
+
+<mt-popup
+      v-model="popupVisible"
+      position="right">
+
+	<div class="page-header-main" id="content">
+	<section class='padding content' v-html="content"></section>
+	</div>
+</mt-popup>
+<mt-header :title="title" fixed style="z-index: 9999;" v-show="popupVisible" >
+		     <mt-button icon="back" slot="left" @click="popupVisible=false"></mt-button>
+		     <mt-button icon="more" slot="right"></mt-button>
+</mt-header>
+         
+<div v-show="!popupVisible">
+<mt-header fixed title="Cnodejs社区头条">Cnodejs社区头条</mt-header>
+<div class="page-header-main">
+
+	<mt-popup
+		  v-model="moreVisible"
+		  position="bottom">
+	</mt-popup>
+
+ <div>
+	  <a class="mint-cell" v-for="(item,index) in jsonlist" @click="indexfun(index)">
+	  	<div class="mint-cell-wrapper" ><span>{{item.title}}</span></div> <i class="mint-cell-allow-right"></i></div>
+	  </a>	
+  </div>
   <div><p v-show="jsonlist.length==0">暂无数据</p></div>
 </div>
-<script>
 
+<mt-tabbar v-model="selected" fixed>
+  <mt-tab-item id="首页">
+    <img slot="icon" src="../assets/100x100.png">
+    首页
+  </mt-tab-item>
+  <mt-tab-item id="收藏">
+    <img slot="icon" src="../assets/100x100.png">
+    收藏
+  </mt-tab-item>
+  <mt-tab-item id="关注">
+    <img slot="icon" src="../assets/100x100.png">
+    关注
+  </mt-tab-item>
+  <mt-tab-item id="我的">
+    <img slot="icon" src="../assets/100x100.png">
+    我的
+  </mt-tab-item>
+</mt-tabbar>
+
+</div>
+</body>
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<script src="https://unpkg.com/mint-ui/lib/index.js"></script>
+<script src="https://cdn.bootcss.com/vue-resource/1.3.1/vue-resource.js"></script>
+<script>
 	   var example2 = new Vue({
 		  el: '#example-2',
 		  data: {
 		  	jsonlist:[],
 		    url: 'https://cnodejs.org/api/v1/topics',
+		    popupVisible:false,
+		    moreVisible:true,
+		    nowindex: '100',
+		    title: '',
+		    content: ''
 		  },
 		  mounted: function (){
-		  	this.$http.get(this.url).then(function(res){
+		  	this.$nextTick(function(){
+		  		this.toplist();
+		  	})
+		  },
+		  filters: {
+		  },
+		  methods:{
+		  	toplist:function(){
+		  		this.$http.get(this.url).then(function(res){
 				 this.jsonlist=res.data.data;
 				 // alert(res.data.s);
 				},function(res){
 					alert(res.status);
 				});
+		  	},
+		  	indexfun:function(index){
+		  		this.nowindex = index;
+		  		this.title = this.jsonlist[this.nowindex].title;
+		  		this.content = this.jsonlist[this.nowindex].content;
+		  		console.log(this.content);
+		  		this.popupVisible=true;
+		  		imgeload();
+		  	}
 		  }
 	
 		})
-
+ function imgeload(){
+        var aImgs = document.getElementById("content").getElementsByTagName('img');
+    	for(var i=0;l = aImgs.length,i<l;i++){
+            aImgs[i].src = "http:"+aImgs[i].getAttribute('src');    
+    	}
+}
 </script>
-</body>
+
 </html>
